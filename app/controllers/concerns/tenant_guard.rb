@@ -37,8 +37,18 @@ module TenantGuard
     @auth_payload&.dig('sub')
   end
 
+  # 租户缝校验（springboot TenantGuard.verifyPathTenant 镜像）：
+  # path tenantId 与 JWT tenant_id claim 不等 → 403 FORBIDDEN。
+  def verify_path_tenant!
+    return if params[:tenant_id].present? && params[:tenant_id] == current_tenant_id
+
+    raise ApplicationController::AccessDenied, 'tenant mismatch'
+  end
+
+  # oauth 链的 decode_bearer! 在 ApplicationController（oauth 控制器不挂本 concern）
+
   def render_unauthorized(message)
     response.set_header('WWW-Authenticate', 'Bearer realm="api"')
-    render json: { error: 'unauthorized', message: message }, status: :unauthorized
+    render json: { code: 'INVALID_CREDENTIALS', message: message }, status: :unauthorized
   end
 end

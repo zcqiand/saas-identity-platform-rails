@@ -3,6 +3,7 @@
 require_relative 'boot'
 
 require 'rails/all'
+require_relative '../lib/api_support/json_camelize_key'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
