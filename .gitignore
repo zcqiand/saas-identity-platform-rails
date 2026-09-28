@@ -22,6 +22,7 @@ coverage/
 
 # 本机 dev 真值（三件套 .env.example/.env.test/.env.production 是契约文件，必须入库）
 /.env.local
+/.env
 
 # rails 凭据（家族不用加密凭据文件，prod 走 ENV SECRET_KEY_BASE）
 /config/master.key
