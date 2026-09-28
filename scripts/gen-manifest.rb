@@ -67,5 +67,6 @@ operations.sort_by! { |o| [o["tag"], o["operationId"]] }
 manifest = { "schema" => 1, "operations" => operations }
 out_path = File.join(out_dir, "api_manifest.json")
 FileUtils.mkdir_p(File.dirname(out_path))
-File.write(out_path, JSON.pretty_generate(manifest) + "\n")
+# binwrite: Windows Ruby text mode turns LF into CRLF on disk (determinism)
+File.binwrite(out_path, JSON.pretty_generate(manifest) + "\n")
 puts "[gen-manifest] #{operations.size} operations -> #{out_path}"
