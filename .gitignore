@@ -1,0 +1,33 @@
+.bundle/
+/vendor/
+coverage/
+*.gem
+
+.state/trace.json
+.state/gate.json
+.state/gate.partial.json
+.state/alignment.json
+
+# Claude 临时文件
+.claude/
+.superpowers/
+.mcp.json
+
+# Rails 运行时产物
+/log/*
+/tmp/
+/storage/
+/db/schema.rb
+/db/*.sqlite3
+
+# 本机 dev 真值（三件套 .env.example/.env.test/.env.production 是契约文件，必须入库）
+/.env.local
+
+# rails 凭据（家族不用加密凭据文件，prod 走 ENV SECRET_KEY_BASE）
+/config/master.key
+
+# suite 门禁产物（gate/alignment 全族不入库）
+.state/gate.json
+.state/gate.partial.json
+.state/alignment.json
+.state/session.json

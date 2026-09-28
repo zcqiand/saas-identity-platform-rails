@@ -1,0 +1,15 @@
+{
+  "version_lock": {
+    "ruby": "3.4.10",
+    "rails": "8.1.4",
+    "pg-gem": "~> 1.5",
+    "puma": "~> 6.6",
+    "jwt-gem": "~> 2.8",
+    "rack-cors": "~> 2.0",
+    "dotenv-rails": "~> 3.1",
+    "minitest": "（随 rails）",
+    "rubocop": "~> 1.60",
+    "brakeman": "（dev 组，最新稳定）",
+    "postgresql-server": "16（家族共享实例 100.79.128.25:5432）"
+  }
+}

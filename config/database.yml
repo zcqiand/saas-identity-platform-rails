@@ -1,0 +1,23 @@
+# 家族 DB-First：schema SSOT = shared 仓 drizzle（禁止 db/migrate，见仓 CLAUDE.md）。
+# 本文件只描述连接；PG 五件套 ENV.fetch fail-fast 无默认兜底（suite-hard-rules §1）。
+# test 库由 .env.test 的 PG_DATABASE=saas_test 指定（.env 三件套 L0.5 键集相等）。
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+  host: <%= ENV.fetch("PG_HOST") %>
+  port: <%= ENV.fetch("PG_PORT") %>
+  username: <%= ENV.fetch("PG_USER") %>
+  password: <%= ENV.fetch("PG_PASSWORD") %>
+
+development:
+  <<: *default
+  database: <%= ENV.fetch("PG_DATABASE") %>
+
+test:
+  <<: *default
+  database: <%= ENV.fetch("PG_DATABASE") %>
+
+production:
+  <<: *default
+  database: <%= ENV.fetch("PG_DATABASE") %>

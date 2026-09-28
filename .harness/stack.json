@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "suite_version": "0.6.0",
+  "project": "saas-identity-platform-rails",
+  "stack": "rails",
+  "gates": {
+    "L1": {
+      "name": "格式",
+      "cmd": [
+        "bundle",
+        "exec",
+        "rubocop",
+        "--only",
+        "Layout"
+      ],
+      "fix": "运行 `bundle exec rubocop -a --only Layout` 后重试。"
+    },
+    "L2": {
+      "name": "静态检查",
+      "cmd": [
+        "bundle",
+        "exec",
+        "rubocop"
+      ],
+      "fix": "逐条修复 rubocop。禁止 disable 掩盖，除非同行注释给出理由。"
+    },
+    "L2.security": {
+      "name": "安全扫描",
+      "cmd": [
+        "bundle",
+        "exec",
+        "brakeman",
+        "-q",
+        "-z"
+      ],
+      "fix": "逐条修复 brakeman 警告。禁止 ignore 掩盖，除非同行注释给出理由。"
+    },
+    "L4": {
+      "name": "测试",
+      "cmd": [
+        "bundle",
+        "exec",
+        "rake",
+        "test"
+      ],
+      "fix": "先让测试变绿。"
+    }
+  },
+  "trace_cmd": [
+    "bundle",
+    "exec",
+    "rake",
+    "test"
+  ],
+  "trace_env": {
+    "TRACE_MAP": "1"
+  },
+  "source_dirs": [
+    "app",
+    "config",
+    "lib"
+  ],
+  "test_dirs": [
+    "test"
+  ]
+}

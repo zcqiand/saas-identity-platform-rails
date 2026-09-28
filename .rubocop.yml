@@ -1,0 +1,23 @@
+AllCops:
+  TargetRubyVersion: 3.4
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    # API 面只认生成物（suite-hard-rules §4）：生成目录禁手改也免检
+    - "lib/generated/**/*"
+    - "bin/*"
+    - "vendor/**/*"
+    - "node_modules/**/*"
+
+# L1 = rubocop --only Layout（格式）；L2 = rubocop 全量（静态检查）。
+# 这里只放仓库级调优，压制噪音；禁令靠 stack_rules.forbid 与评审，不靠关 cop。
+Metrics/MethodLength:
+  Max: 20
+Metrics/AbcSize:
+  Max: 25
+Style/Documentation:
+  Enabled: false
+
+# 家族统一 LF（产物确定性 hideGenerationTimestamp 教训；git 工作树跨平台）
+Layout/EndOfLine:
+  EnforcedStyle: lf
