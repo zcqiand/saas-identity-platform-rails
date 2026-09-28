@@ -17,10 +17,12 @@ module Auth
     def call
       user = verify_credentials
       user.update!(failed_attempts: 0, locked_until: nil)
-      persist_token_pair(user)
+      # 租户先解析（镜像 springboot AuthController.login 顺序：tenant check → persist 内验 clientId）
+      tenant_id = current_tenant_id(user)
       raise ArgumentError, 'unknown clientId' if OauthClient.find_by(client_id: @client_id).nil?
 
-      login_payload(user)
+      persist_token_pair(user, tenant_id)
+      login_payload(user, tenant_id)
     end
 
     # 423 空响应体（springboot body(null) 忠实镜像，空体即契约形状）
@@ -39,8 +41,7 @@ module Auth
       raise ApplicationController::InvalidCredentials, 'invalid credentials'
     end
 
-    def login_payload(user)
-      tenant_id = current_tenant_id(user)
+    def login_payload(user, tenant_id)
       {
         user: { id: user.id, username: user.username, email: user.email },
         user_id: user.id,
@@ -79,28 +80,35 @@ module Auth
     end
 
     # 落库 token 对（镜像 springboot persistTokenPair）：access 行 access_token="n/a"，
-    # refresh 行 "rt_<uuid>" 30 天；clientId 未知 -> 400
-    def persist_token_pair(user)
+    # refresh 行 "rt_<uuid>" 30 天，两行都带 tenantId（refresh rotate 继承 → I28 响应
+    # 必有 tenantId；漏写 = normalize 剔 nil 后四方比对分叉）
+    def persist_token_pair(user, tenant_id)
       now = Time.now
       token = OauthAccessToken.create!(
         token_id: "at_#{SecureRandom.uuid}",
         access_token: 'n/a',
         client_id: @client_id,
         user_id: user.id,
+        tenant_id: tenant_id,
         expires_at: now + 1.hour,
         revoked: false
       )
       @refresh_token = "rt_#{SecureRandom.uuid}"
-      OauthRefreshToken.create!(
+      OauthRefreshToken.create!(refresh_attrs(token, tenant_id, now))
+    rescue ActiveRecord::InvalidForeignKey
+      raise ArgumentError, 'unknown clientId'
+    end
+
+    def refresh_attrs(token, tenant_id, now)
+      {
         refresh_token: @refresh_token,
         access_token_id: token.id,
         client_id: @client_id,
-        user_id: user.id,
+        user_id: token.user_id,
+        tenant_id: tenant_id,
         expires_at: now + 30.days,
         revoked: false
-      )
-    rescue ActiveRecord::InvalidForeignKey
-      raise ArgumentError, 'unknown clientId'
+      }
     end
 
     def access_token(user, tenant_id)

@@ -38,6 +38,27 @@ class AdminMeTest < ActionDispatch::IntegrationTest
     assert_equal 401, response.status
   end
 
+  # 镜像 springboot DataIntegrityViolationException → 400 "constraint violation"
+  # （I64 空 body 创 client 走 NOT NULL 口子；500 是分叉）
+  test 'create client with empty body maps NOT NULL violation to 400' do
+    post '/api/v1/admin/clients', params: {}, headers: auth_header(@token), as: :json
+    assert_equal 400, response.status
+    body = JSON.parse(response.body)
+    assert_equal 'BAD_REQUEST', body['code']
+    assert body['message'].start_with?('constraint violation')
+  end
+
+  # 镜像 shared CreateSysUserRequest.password minLength: 8（springboot @Size(min=8)
+  # → MethodArgumentNotValidException → 400；5.59 D-2 / 5.64 四后端契约面）
+  test 'create tenant user with short password is rejected 400' do
+    post "/api/v1/tenants/#{alice_tenant_id}/members",
+         params: { username: 'shortpw-user', email: 'shortpw@x.io', password: 'short7' },
+         headers: auth_header(@token), as: :json
+    assert_equal 400, response.status
+    assert_equal 'BAD_REQUEST', JSON.parse(response.body)['code']
+    assert_nil SysUser.find_by(username: 'shortpw-user')
+  end
+
   test 'me whoami returns memberships and resolved tenant' do
     get '/api/v1/me', headers: auth_header(@token)
     assert_equal 200, response.status

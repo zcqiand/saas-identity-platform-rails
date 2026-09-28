@@ -21,6 +21,12 @@ class TenantMembersController < ApplicationController
     %i[username password email].each do |key|
       raise ArgumentError, "#{key}: is required" if body[key].blank?
     end
+    # 镜像 CreateSysUserRequest.password @Size(min=8, max=256)（shared 契约
+    # minLength/maxLength；springboot MethodArgumentNotValidException → 400 同语义）
+    if body[:password].length < 8 || body[:password].length > 256
+      raise ArgumentError,
+            'password: size must be between 8 and 256'
+    end
 
     user = SysUser.create!(
       username: body[:username], password: "plain:#{body[:password]}",

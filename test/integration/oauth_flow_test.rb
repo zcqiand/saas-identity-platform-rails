@@ -54,6 +54,9 @@ class OauthFlowTest < ActionDispatch::IntegrationTest
                    refreshToken: login_body['refreshToken'] }, as: :json
     assert_equal 200, response.status
     rotated = JSON.parse(response.body)
+    # 镜像：login persistTokenPair 落行带 tenantId（springboot 先解析租户再落行），
+    # refresh rotate 继承旧行 -> 响应必有 tenantId（M96.F02.I28 四方比对口径）
+    assert rotated['tenantId'].present?, 'refresh response missing tenantId'
 
     post '/api/v1/oauth/token',
          params: { grantType: 'refresh_token', clientId: DEV_CLIENT,
