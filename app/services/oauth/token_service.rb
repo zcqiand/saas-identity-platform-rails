@@ -90,7 +90,7 @@ module Oauth
       refresh = "rt_#{SecureRandom.uuid}"
       OauthRefreshToken.create!(
         refresh_token: refresh, access_token_id: access.id, client_id: client_id,
-        user_id: user_id, expires_at: now + 30.days, revoked: false
+        user_id: user_id, tenant_id: tenant_id, expires_at: now + 30.days, revoked: false
       )
       [access, refresh]
     end

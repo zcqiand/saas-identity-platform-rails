@@ -67,6 +67,29 @@ class OauthFlowTest < ActionDispatch::IntegrationTest
     assert rotated['accessToken'].present?
   end
 
+  # live M96.F02.I28 分叉根因：exchange 落行的 refresh 行漏 tenant_id
+  # （I27 的 refreshToken 来自 code exchange；rotate 继承旧行 nil → normalize 剔除
+  # → 四方比对 nextjs 有 tenantId 而 rails 无）。login 链断言覆盖不到这条链。
+  test 'refresh of exchange-issued token carries tenantId' do
+    post '/api/v1/oauth/authorize',
+         params: authorize_params(redirect_uri: first_redirect), headers: auth_header(@token), as: :json
+    assert_equal 200, response.status
+    code = JSON.parse(response.body)['code']
+
+    post '/api/v1/oauth/token',
+         params: { grantType: 'authorization_code', clientId: DEV_CLIENT,
+                   code: code, redirectUri: first_redirect }, as: :json
+    assert_equal 200, response.status
+    granted = JSON.parse(response.body)
+
+    post '/api/v1/oauth/token',
+         params: { grantType: 'refresh_token', clientId: DEV_CLIENT,
+                   refreshToken: granted['refreshToken'] }, as: :json
+    assert_equal 200, response.status
+    rotated = JSON.parse(response.body)
+    assert rotated['tenantId'].present?, 'exchange-issued refresh response missing tenantId'
+  end
+
   test 'authorize without bearer or tenant claim is 401' do
     post '/api/v1/oauth/authorize', params: authorize_params(redirect_uri: first_redirect), as: :json
     assert_equal 401, response.status
