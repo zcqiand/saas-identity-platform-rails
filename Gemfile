@@ -4,6 +4,7 @@ source 'https://rubygems.org'
 
 # 版本锁（profiles/codegen.md §4）：rails 7.2.x exact / pg 1.5 / puma 6 / jwt 2.8 / rubocop 1.60+
 # 升级单独立项 ADR。禁止 bundle update 无钉版漂移。
+gem 'bcrypt', '~> 3.1' # 家族密码校验兜底（DB 值 "plain:" 前缀直等 + BCrypt，同 springboot）
 gem 'jwt', '~> 2.8'
 gem 'pg', '~> 1.5'
 gem 'puma', '~> 6.6'

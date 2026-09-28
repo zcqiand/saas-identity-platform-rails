@@ -21,3 +21,18 @@ Style/Documentation:
 # 家族统一 LF（产物确定性 hideGenerationTimestamp 教训；git 工作树跨平台）
 Layout/EndOfLine:
   EnforcedStyle: lf
+
+# action 名 = operationId 后半段（家族契约 route_parity_test 对账），
+# Clients_getClient -> get_client 是契约面不是命名失误 —— reader 前缀禁令不适用。
+Naming/AccessorMethodName:
+  Exclude:
+    - "app/controllers/**/*"
+
+# Ruby 惯用短块参数（|c| |m| |r|）；DTO 构建器逐字段映射的密度是镜像义务的一部分。
+Naming/MethodParameterName:
+  Enabled: false
+
+# routes.rb 的 47 条显式路由 = manifest 1:1 镜像，整体是一个 DSL 块。
+Metrics/BlockLength:
+  Exclude:
+    - "config/routes.rb"
