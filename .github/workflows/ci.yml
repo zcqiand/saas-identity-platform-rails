@@ -45,7 +45,7 @@ jobs:
           JWT_AUDIENCE: ci
           SAAS_CORS_ALLOWED_ORIGINS: http://localhost:3000
           SECRET_KEY_BASE: ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci
-        run: bin/rails runner 'Rails.application.eager_load!' # Rails 8.1 无 zeitwerk:check 任务；eager-load 全 app 面 = 等效编译检查
+        run: bundle exec rails runner 'Rails.application.eager_load!' # Rails 8.1 无 zeitwerk:check 任务；eager-load 全 app 面 = 等效编译检查
 
   deploy:
     runs-on: ubuntu-latest
