@@ -28,10 +28,14 @@ RUN apt-get update \
 
 # 缓存友好的层：先只复制 Gemfile*.lock 跑 bundle install，
 # 再 copy 应用码。多数 commit 只动码，gems 缓存命中。
+# bundler 行为走 ENV 不走 `bundle config set --local`：ruby 官方镜像预设
+# BUNDLE_APP_CONFIG=/usr/local/bundle，--local 会写进全局 config 而非
+# /app/.bundle/config——runtime 只拷 /app 就丢了 path 指路 → puma not found
+# （2026-09-29 首部署事故根因）。ENV 优先级最高，两阶段各自显式声明。
 COPY Gemfile Gemfile.lock ./
-RUN bundle config set --local deployment true \
- && bundle config set --local without 'development test' \
- && bundle install --jobs 4
+ENV BUNDLE_DEPLOYMENT=true \
+    BUNDLE_WITHOUT=development:test
+RUN bundle install --jobs 4
 
 COPY . .
 
@@ -47,10 +51,16 @@ RUN apt-get update \
 # gems 从 builder 拷（bundle config deployment 把 gems 放 vendor/bundle，随 app 走）
 COPY --from=builder /app /app
 
+# BUNDLE_PATH 指向 builder 装进 /app/vendor/bundle 的 gems（deployment 模式默认
+# 落点）；不设的话 bundler 找 /usr/local/bundle 系统路径 → "command not found: puma"
 ENV RAILS_ENV=production \
     RAILS_LOG_TO_STDOUT=1 \
     SERVER_PORT=5106 \
-    TZ=UTC
+    TZ=UTC \
+    BUNDLE_DEPLOYMENT=true \
+    BUNDLE_WITHOUT=development:test \
+    BUNDLE_PATH=/app/vendor/bundle \
+    BUNDLE_GEMFILE=/app/Gemfile
 
 EXPOSE 5106
 
