@@ -1,0 +1,32 @@
+# 构建上下文瘦身 + 真值防泄（.env* 家族纪律：真 secret 永不入镜像）
+.git/
+.github/
+.state/
+.claude/
+.superpowers/
+.mcp.json
+
+vendor/
+.bundle/
+coverage/
+log/
+tmp/
+storage/
+
+# 本机真值三兄弟不入镜像（.env.example 是契约文件要进——它无 secret）
+.env
+.env.local
+.env.test
+
+# 测试与文档（镜像运行面不需要）
+test/
+docs/
+*.md
+!ARCHITECTURE.md
+
+# deploy 脚本跑在 VPS host，不进镜像
+deploy/
+
+# Windows 杂物
+*.swp
+Thumbs.db

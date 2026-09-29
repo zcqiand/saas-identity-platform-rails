@@ -1,0 +1,106 @@
+name: ci
+
+# saas-identity-platform-rails (Ruby 3.4 + Rails 8.1 API + puma)
+# 推送链:
+# - branch push(master/main) → 静态三件（rubocop L1+L2 / brakeman / zeitwerk:check）
+#   CI runner 不可达内网共享 PG → L4 真库集成测试不上 CI（家族分层：
+#   CI=编译+静态 / gate=真库全量；springboot -DexcludedGroups=pg 同款原则）
+# - tag push(v<X>.<Y>.<Z>-<YYYYMMDD> per tag.md §1) → 静态三件 + docker build & push + VPS 部署
+# 镜像名/SSH 路径/部署脚本用 ${{ github.event.repository.name }} 避免跨仓劫持。
+# 路径与姊妹仓 saas-identity-platform-springboot 同款（镜像 springboot ci.yml）。
+on:
+  push:
+    branches: [main, master]
+    tags: ["v*"]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true # bundle install + 缓存（Gemfile.lock 驱动）
+      - name: L1+L2 rubocop
+        run: bundle exec rubocop
+      - name: L2.security brakeman
+        run: bundle exec brakeman -q -z
+      - name: compile check (zeitwerk eager-load 全 app 面)
+        # 需要 DB 连接吗？不——zeitwerk:check 只 eager load 类定义，不触库。
+        # 但 Rails boot 需要 env 键存在（database.yml ENV.fetch fail-fast）——
+        # 提供占位值（boot 后 DATABASE 探活才发生，类加载不连库）。
+        env:
+          SERVER_PORT: "5106"
+          PG_HOST: localhost
+          PG_PORT: "5432"
+          PG_USER: ci
+          PG_PASSWORD: ci
+          PG_DATABASE: ci
+          JWT_SIGNING_KEY: ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci
+          JWT_ISSUER: ci
+          JWT_AUDIENCE: ci
+          SAAS_CORS_ALLOWED_ORIGINS: http://localhost:3000
+          SECRET_KEY_BASE: ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci
+        run: bin/rails zeitwerk:check
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/')
+    concurrency:
+      group: deploy-${{ github.event.repository.name }}-${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
+            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:${{ github.ref_name }}
+
+      - name: Pull image and restart container on VPS
+        uses: appleboy/ssh-action@v1
+        # appleboy/ssh-action@v1 的 ${{ secrets.* }} 不会自动进 SSH 远端 shell;
+        # step env 注入 Actions env,with.envs 列出要转发的名字 (逗号分隔)
+        env:
+          PG_HOST: ${{ secrets.PG_HOST }}
+          PG_PASSWORD: ${{ secrets.PG_PASSWORD }}
+          NGINX_DOMAIN: ${{ vars.NGINX_DOMAIN }}
+          NGINX_CERT_BASENAME: ${{ vars.NGINX_CERT_BASENAME }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          envs: PG_HOST,PG_PASSWORD,NGINX_DOMAIN,NGINX_CERT_BASENAME
+          script: |
+            # 自举: 首次部署无 /home/deploy/<repo>/ 时自动建 + 拉 deploy 脚本
+            set -e
+            REPO="${{ github.event.repository.name }}"
+            DEPLOY_DIR="/home/deploy/$REPO"
+            mkdir -p "$DEPLOY_DIR"
+            cd "$DEPLOY_DIR"
+            # 总是重拉最新 deploy 脚本（脚本 bug fix 立即生效）；nginx 模板由脚本自拉
+            curl -fsSL "https://raw.githubusercontent.com/zcqiand/${REPO}/refs/heads/master/deploy/${REPO}.sh" -o "$REPO.sh"
+            chmod +x "$REPO.sh"
+            # 缺 rails.env 时, deploy 脚本从 SSH env 透传的 PG_HOST/PG_PASSWORD 自举
+            # (UMASK 077, chmod 600)。后续 deploy 不需要这些 env (env-file 已存在)。
+            echo "→ env on remote: PG_PASSWORD_set=$([ -n \"${PG_PASSWORD:-}\" ] && echo yes || echo no)"
+            if [ ! -f "rails.env" ] && [ -z "${PG_PASSWORD:-}" ]; then
+              echo "ERROR: rails.env missing AND PG_PASSWORD secret not forwarded, deploy script will fail-fast" >&2
+            fi
+            sh "$REPO.sh" "${{ secrets.DOCKER_USERNAME }}" "${{ secrets.DOCKER_PASSWORD }}" "${{ github.ref_name }}"
