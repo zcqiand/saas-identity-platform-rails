@@ -48,6 +48,26 @@ class AdminMeTest < ActionDispatch::IntegrationTest
     assert body['message'].start_with?('constraint violation')
   end
 
+  # 镜像 springboot DataIntegrityViolationException → 400（uk_oauth_client_id 撞键，
+  # PG 23505；2026-09-29 review Important：RecordNotUnique 未 rescue 曾 500）
+  test 'create client with duplicate clientId maps unique violation to 400' do
+    cid = "dup-#{SecureRandom.hex(4)}"
+    post '/api/v1/admin/clients',
+         params: { clientId: cid, clientName: 'First', clientSecret: 's',
+                   grantTypes: 'authorization_code', redirectUris: 'http://x/cb' },
+         headers: auth_header(@token), as: :json
+    assert_equal 200, response.status
+
+    post '/api/v1/admin/clients',
+         params: { clientId: cid, clientName: 'Dup', clientSecret: 's',
+                   grantTypes: 'authorization_code', redirectUris: 'http://x/cb' },
+         headers: auth_header(@token), as: :json
+    assert_equal 400, response.status
+    body = JSON.parse(response.body)
+    assert_equal 'BAD_REQUEST', body['code']
+    assert body['message'].start_with?('constraint violation')
+  end
+
   # 镜像 shared CreateSysUserRequest.password minLength: 8（springboot @Size(min=8)
   # → MethodArgumentNotValidException → 400；5.59 D-2 / 5.64 四后端契约面）
   test 'create tenant user with short password is rejected 400' do

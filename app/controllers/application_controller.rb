@@ -30,10 +30,11 @@ class ApplicationController < ActionController::API
     render_error(:forbidden, 'FORBIDDEN', e.message || 'access denied')
   end
 
-  # NotNullViolation 并入同组（镜像 springboot DataIntegrityViolationException → 400
+  # NotNullViolation / RecordNotUnique（PG 23505，2026-09-29 review Important 补）
+  # 并入同组（镜像 springboot DataIntegrityViolationException → 400
   # "constraint violation"；I64 空 body 创 client 走这个口子，500 是分叉）
   rescue_from ActiveRecord::RecordInvalid, ActiveRecord::InvalidForeignKey,
-              ActiveRecord::NotNullViolation do |e|
+              ActiveRecord::NotNullViolation, ActiveRecord::RecordNotUnique do |e|
     render_error(:bad_request, 'BAD_REQUEST', "constraint violation: #{e.message}")
   end
 

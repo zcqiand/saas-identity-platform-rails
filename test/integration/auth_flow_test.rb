@@ -63,4 +63,13 @@ class AuthFlowTest < ActionDispatch::IntegrationTest
     assert_equal 403, response.status
     assert_equal 'FORBIDDEN', JSON.parse(response.body)['code']
   end
+
+  # 家族真源：springboot AuthController 无 active membership 时抛 AccessDeniedException → 403
+  # （2026-09-29 review Critical：return nil 曾让 login 拿 200 + tenant_id: null）。
+  test 'login without active membership is 403, not 200 with null tenant' do
+    SysUser.create!(username: 'noMember', password: 'plain:pw', email: 'noMember@x', status: 1, failed_attempts: 0)
+    login(username: 'noMember', password: 'pw')
+    assert_equal 403, response.status
+    assert_equal 'FORBIDDEN', JSON.parse(response.body)['code']
+  end
 end

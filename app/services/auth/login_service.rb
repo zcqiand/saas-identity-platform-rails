@@ -66,7 +66,10 @@ module Auth
 
     def current_tenant_id(user)
       member = TenantMember.where(user_id: user.id, status: 1).order(:created_at).first
-      return nil if member.nil?
+      # 家族真源：无 active membership → 403（springboot AuthController AccessDeniedException），
+      # 禁止 return nil 兜底（runtime-identity-fallback 禁令）。
+      raise ApplicationController::AccessDenied, 'no active tenant membership' if member.nil?
+
       return member.tenant_id if Tenant.find_by(id: member.tenant_id)&.status == 1
 
       raise ApplicationController::AccessDenied, 'no active tenant'
