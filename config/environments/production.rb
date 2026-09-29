@@ -49,7 +49,10 @@ Rails.application.configure do
   # config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = true
+  # force_ssl=false：TLS 由 VPS nginx 终结（家族 springboot/nextjs/aspnetcore 容器
+  # 同款明文收口姿态）。开着会把 /health 301 → https，HEALTHCHECK/deploy 探针
+  # 打明文 puma 恒红（2026-09-29 preflight 实证）；外层 nginx-vps.conf 已带 HSTS。
+  config.force_ssl = false
 
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
