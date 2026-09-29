@@ -2,7 +2,7 @@ name: ci
 
 # saas-identity-platform-rails (Ruby 3.4 + Rails 8.1 API + puma)
 # 推送链:
-# - branch push(master/main) → 静态三件（rubocop L1+L2 / brakeman / zeitwerk:check）
+# - branch push(master/main) → 静态三件（rubocop L1+L2 / brakeman / eager-load 编译检查）
 #   CI runner 不可达内网共享 PG → L4 真库集成测试不上 CI（家族分层：
 #   CI=编译+静态 / gate=真库全量；springboot -DexcludedGroups=pg 同款原则）
 # - tag push(v<X>.<Y>.<Z>-<YYYYMMDD> per tag.md §1) → 静态三件 + docker build & push + VPS 部署
@@ -34,6 +34,7 @@ jobs:
         # 提供占位值（boot 后 DATABASE 探活才发生，类加载不连库）。
         env:
           SERVER_PORT: "5106"
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
           PG_HOST: localhost
           PG_PORT: "5432"
           PG_USER: ci
@@ -44,7 +45,7 @@ jobs:
           JWT_AUDIENCE: ci
           SAAS_CORS_ALLOWED_ORIGINS: http://localhost:3000
           SECRET_KEY_BASE: ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci-ci
-        run: bin/rails zeitwerk:check
+        run: bin/rails runner 'Rails.application.eager_load!' # Rails 8.1 无 zeitwerk:check 任务；eager-load 全 app 面 = 等效编译检查
 
   deploy:
     runs-on: ubuntu-latest
