@@ -83,3 +83,16 @@ else
     echo "[gen-shared]    WARN: marker write failed - staleness will report UNKNOWN" >&2
   fi
 fi
+
+# REQ-2026-001: Swagger UI 数据副本 —— shared openapi.yaml -> public/api-docs/openapi.json。
+# SSOT 是 shared 仓 openapi.yaml：UI 副本仅做 yaml->json + servers 同源改写。
+# shared 的 servers 是 api.example.com 占位符；契约 paths 已带 /api 前缀，
+# 同源空串让 swagger try-it-out 打本域。勿手改 openapi.json，改契约后重跑本脚本。
+echo "[gen-shared] step 3 — rails: openapi.yaml -> public/api-docs/openapi.json (servers -> same-origin)"
+(cd "$ROOT" && ruby -ryaml -rjson -e '
+  src, dst = ARGV
+  doc = YAML.load_file(src, aliases: true)
+  doc["servers"] = [{ "url" => "", "description" => "当前后端（同源）" }]
+  File.write(dst, JSON.pretty_generate(doc) + "\n")
+' "$OPENAPI" "$ROOT/public/api-docs/openapi.json")
+echo "[gen-shared]    wrote $ROOT/public/api-docs/openapi.json"

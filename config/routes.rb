@@ -3,6 +3,13 @@
 # 路由面 = lib/generated/api_manifest.json 的 1:1 镜像（SSOT 是 shared openapi.yaml）。
 # action 名 = operationId 后半段 underscore；test/contracts/route_parity_test.rb 逐条对账。
 Rails.application.routes.draw do
+  # REQ-2026-001：根路径与 /api-docs 默认跳转 Swagger UI。基础设施端点（与 /health 同类），
+  # 不进契约面/功能树；/api-docs/* 由 public/ 静态中间件直接服务，本 redirect 是
+  # public_file_server 关闭时的兜底。redirect 路由无 controller#action defaults，
+  # route_parity_test 的 defaults.blank? 过滤不对其对账。
+  root to: redirect('/api-docs/index.html', status: 302)
+  get '/api-docs', to: redirect('/api-docs/index.html', status: 302)
+
   get '/health', to: 'health#show'
 
   scope '/api/v1', defaults: { format: :json } do
