@@ -9,6 +9,7 @@ class TenantMembersController < ApplicationController
 
   # status query 过滤 DB 级（total=过滤后计数）；排序 createdAt DESC, id ASC；
   # member 无对应 user 行的条目被滤掉
+  # @impl M00.F02.I01 (book anchor xr-know-012)
   def list_tenant_users
     scope = filtered_member_scope
     page, page_size = page_params
@@ -16,6 +17,7 @@ class TenantMembersController < ApplicationController
     render_camel({ items: member_items(scope, page, page_size), page: page, page_size: page_size, total: total })
   end
 
+  # @impl M00.F02.I02 (book anchor xr-know-012)
   def create_tenant_user
     body = params.permit(:username, :password, :email, :mobile)
     %i[username password email].each do |key|
@@ -39,12 +41,14 @@ class TenantMembersController < ApplicationController
     render_camel(Family::MemberViews.flat_user_view(member, user))
   end
 
+  # @impl M00.F02.I03 (book anchor xr-know-012)
   def get_tenant_user
     member, user = locate_member
     render_camel(Family::MemberViews.flat_user_view(member, user))
   end
 
   # 镜像：契约已删 status 字段（状态唯一通道是 /status 端点）；只更新 user 行 email/mobile
+  # @impl M00.F02.I04 (book anchor xr-know-012)
   def update_tenant_user
     member, user = locate_member
     updates = params.permit(:email, :mobile).to_h.compact
@@ -53,6 +57,7 @@ class TenantMembersController < ApplicationController
   end
 
   # 删 member_role 绑定 + member 行；user 行不删；204
+  # @impl M00.F02.I05 (book anchor xr-know-012)
   def delete_tenant_user
     member, = locate_member
     TenantMemberRole.where(member_id: member.id).delete_all
@@ -61,6 +66,7 @@ class TenantMembersController < ApplicationController
   end
 
   # 双写：member.status 与 sys_user.status 同值（家族口径）
+  # @impl M00.F02.I08 (book anchor xr-know-012)
   def change_tenant_user_status
     member, user = locate_member
     status_code = Family::Dicts.member_status_code(params.require(:status))
@@ -70,6 +76,7 @@ class TenantMembersController < ApplicationController
   end
 
   # body { roleIds }：先全删再插；只接受本租户 sys_role 的 roleId，外来/未知静默忽略
+  # @impl M01.F02.I01 (book anchor xr-know-012)
   def assign_tenant_member_roles
     member, user = locate_member
     role_ids = params[:roleIds].is_a?(Array) ? params[:roleIds] : []
@@ -81,6 +88,7 @@ class TenantMembersController < ApplicationController
 
   # invitations：email 空 -> 400；建真 sys_user（username=email, password 为空串, status=2）；
   # member status=1(active)；响应嵌套视图
+  # @impl M00.F02.I06 (book anchor xr-know-012)
   def invite_tenant_user
     email = params[:email].to_s.strip
     raise ArgumentError, 'email: is required' if email.empty?

@@ -6,12 +6,14 @@ class TenantApplicationsController < ApplicationController
 
   before_action :verify_path_tenant!
 
+  # @impl M00.F05.I01 (book anchor xr-know-012)
   def list_tenant_applications
     scope = TenantApplication.where(tenant_id: params[:tenant_id])
     render_paginated(scope) { |a| app_dto(a) }
   end
 
   # 未知 clientId -> 404（先查 oauth_client，非盲插）；expireTime 请求字段存在但不落库（镜像）
+  # @impl M00.F05.I02 (book anchor xr-know-012)
   def subscribe_tenant_application
     OauthClient.find_by!(client_id: params[:clientId])
     raise ArgumentError, 'clientId: is required' if params[:clientId].blank?
@@ -20,6 +22,7 @@ class TenantApplicationsController < ApplicationController
     render_camel(app_dto(app))
   end
 
+  # @impl M00.F05.I03 (book anchor xr-know-012)
   def update_tenant_application
     app = find_app
     updates = {}
@@ -30,6 +33,7 @@ class TenantApplicationsController < ApplicationController
   end
 
   # 行不存在也 204（ifPresent 静默，镜像）
+  # @impl M00.F05.I04 (book anchor xr-know-012)
   def remove_tenant_application
     TenantApplication.where(tenant_id: params[:tenant_id], client_id: params[:client_id]).delete_all
     head :no_content

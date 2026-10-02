@@ -11,6 +11,7 @@ class SessionsController < ApplicationController
   end
 
   # 204 恒定，无任何 token 撤销副作用（springboot logout 镜像）
+  # @impl M01.F04.I06 (book anchor xr-know-012)
   def logout
     head :no_content
   end

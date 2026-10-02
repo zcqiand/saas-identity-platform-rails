@@ -4,10 +4,12 @@
 class AdminTenantsController < ApplicationController
   include TenantGuard
 
+  # @impl M00.F01.I01 (book anchor xr-know-012)
   def list_tenants
     render_paginated(Tenant.all) { |t| tenant_dto(t) }
   end
 
+  # @impl M00.F01.I02 (book anchor xr-know-012)
   def create_tenant
     raise ArgumentError, 'tenantKey: is required' if params[:tenantKey].blank?
     raise ArgumentError, 'name: is required' if params[:name].blank?
@@ -16,12 +18,14 @@ class AdminTenantsController < ApplicationController
     render_camel(tenant_dto(tenant))
   end
 
+  # @impl M00.F01.I03 (book anchor xr-know-012)
   def get_tenant
     render_camel(tenant_dto(find_tenant))
   end
 
   # status 枚举 active|suspended -> 写库 1|0；读侧 status==1 ? 'active' : 'active' 是
   # springboot toDto 的忠实镜像（无 0 分支，suspended 不可见 —— 已知 quirk，勿修）
+  # @impl M00.F01.I04 (book anchor xr-know-012)
   def update_tenant
     tenant = find_tenant
     updates = {}
@@ -34,6 +38,7 @@ class AdminTenantsController < ApplicationController
   end
 
   # 行不存在也 204（不预查，镜像）
+  # @impl M00.F01.I05 (book anchor xr-know-012)
   def delete_tenant
     Tenant.where(id: params[:id]).delete_all
     head :no_content

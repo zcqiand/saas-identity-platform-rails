@@ -5,12 +5,14 @@
 class AdminClientsController < ApplicationController
   include TenantGuard
 
+  # @impl M04.F01.I01 (book anchor xr-know-012)
   def list_clients
     render_paginated(OauthClient.all) { |c| client_dto(c) }
   end
 
   # 应用层默认：validity 缺省/<=0 -> 3600/86400（不是 DB DEFAULT 7200/2592000，镜像）；
   # 创建类端点 200 非 201（家族口径）
+  # @impl M04.F01.I02 (book anchor xr-know-012)
   def create_client
     attrs = create_attrs
     client = OauthClient.new(
@@ -29,11 +31,13 @@ class AdminClientsController < ApplicationController
     render_camel(client_dto(client))
   end
 
+  # @impl M04.F01.I03 (book anchor xr-know-012)
   def get_client
     render_camel(client_dto(find_client))
   end
 
   # 镜像 springboot：只应用 clientName/redirectUris/scopes（其余字段忽略）
+  # @impl M04.F01.I04 (book anchor xr-know-012)
   def update_client
     client = find_client
     body = params.permit(:clientName, :redirectUris, :scopes)
@@ -44,12 +48,14 @@ class AdminClientsController < ApplicationController
   end
 
   # body { status } 可空，null 则不变（镜像）
+  # @impl M04.F02.I01 (book anchor xr-know-012)
   def set_client_status
     client = find_client
     client.update!(status: params[:status].to_i) if params.key?(:status) && params[:status].present?
     render_camel(client_dto(client))
   end
 
+  # @impl M04.F01.I05 (book anchor xr-know-012)
   def delete_client
     find_client.destroy!
     head :no_content

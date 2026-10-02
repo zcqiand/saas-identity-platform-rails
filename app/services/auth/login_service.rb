@@ -14,6 +14,7 @@ module Auth
       @client_id = client_id
     end
 
+    # @impl M01.F04.I01 (book anchor xr-know-012)
     def call
       user = verify_credentials
       user.update!(failed_attempts: 0, locked_until: nil)
@@ -55,6 +56,7 @@ module Auth
       }
     end
 
+    # @impl M01.F04.I02 (book anchor xr-know-012)
     def register_failure(user)
       attempts = user.failed_attempts.to_i + 1
       locked = attempts >= SysUser::LOCKOUT_THRESHOLD

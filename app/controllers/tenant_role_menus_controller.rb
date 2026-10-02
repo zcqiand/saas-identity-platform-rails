@@ -2,6 +2,7 @@
 
 # tag: tenant-role-menus -- protected + TenantGuard。
 # 聚合视图 RoleMenuGrant：{ roleId, tenantId, menuIds(升序), updatedAt(=sys_role.updated_at) }。
+# @impl M00.F04.I01 (book anchor xr-know-012)
 class TenantRoleMenusController < ApplicationController
   include TenantGuard
 
@@ -20,6 +21,7 @@ class TenantRoleMenusController < ApplicationController
 
   # 全量替换（差量实现镜像）：锁 role 行 -> 删不在集合的 -> 插缺失（幂等）-> touch role。
   # 响应直接从请求集构造（去重排序），不回读
+  # @impl M00.F04.I03 (book anchor xr-know-012)
   def set_sys_role_menus
     role = locate_role
     requested = params[:menuIds].is_a?(Array) ? params[:menuIds].map(&:to_s).uniq.sort : []
@@ -33,6 +35,7 @@ class TenantRoleMenusController < ApplicationController
   end
 
   # bulk 全删；roleId 不存在也 204（不预查，镜像）
+  # @impl M00.F04.I04 (book anchor xr-know-012)
   def clear_sys_role_menus
     SysRoleMenu.where(role_id: params[:role_id]).delete_all
     head :no_content

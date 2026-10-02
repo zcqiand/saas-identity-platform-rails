@@ -12,6 +12,7 @@ module Me
       @user_id = user_id
     end
 
+    # @impl M04.F04.I08 (book anchor xr-know-012)
     def call
       member_ids = TenantMember.where(user_id: @user_id).pluck(:id)
       return {} if member_ids.empty?

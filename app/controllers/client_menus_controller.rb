@@ -6,11 +6,13 @@ class ClientMenusController < ApplicationController
   include TenantGuard
 
   # 扁平列表（非树），parentId 零值 UUID 不转 null，无 updatedAt（镜像 DTO）
+  # @impl M04.F04.I01 (book anchor xr-know-012)
   def list_sys_menus
     menus = SysMenu.where(client_id: params[:client_id]).order(:sort_order)
     render_camel(menus.map { |m| menu_dto(m) })
   end
 
+  # @impl M04.F04.I02 (book anchor xr-know-012)
   def create_sys_menu
     body = params.permit(:parentId, :title, :type, :path, :component, :perms, :icon, :sortOrder)
     raise ArgumentError, 'title: is required' if body[:title].blank?
@@ -31,11 +33,13 @@ class ClientMenusController < ApplicationController
     render_camel(menu_dto(menu))
   end
 
+  # @impl M04.F04.I03 (book anchor xr-know-012)
   def get_sys_menu
     render_camel(menu_dto(SysMenu.find(params[:menu_id])))
   end
 
   # 镜像 springboot：只应用 title/path/component/perms/icon/sortOrder（忽略 parentId/type/status）
+  # @impl M04.F04.I04 (book anchor xr-know-012)
   def update_sys_menu
     menu = SysMenu.find(params[:menu_id])
     updates = params.permit(:title, :path, :component, :perms, :icon, :sortOrder)
@@ -46,6 +50,7 @@ class ClientMenusController < ApplicationController
   end
 
   # body { parentId } 非空则改挂；200 = 菜单 DTO；不存在 404
+  # @impl M04.F04.I07 (book anchor xr-know-012)
   def move_sys_menu
     menu = SysMenu.find(params[:menu_id])
     menu.update!(parent_id: params[:parentId]) if params[:parentId].present?
@@ -54,6 +59,7 @@ class ClientMenusController < ApplicationController
 
   # body { orderedMenuIds }：取 indexOf(menuId)，>=0 写 sortOrder=idx（只改当前菜单一条）；
   # 响应 = 该 clientId 全量扁平列表；菜单不存在 404
+  # @impl M04.F04.I06 (book anchor xr-know-012)
   def reorder_sys_menus
     menu = SysMenu.find(params[:menu_id])
     ordered = params[:orderedMenuIds]
@@ -67,6 +73,7 @@ class ClientMenusController < ApplicationController
   end
 
   # deleteById 语义：不预查，恒 204
+  # @impl M04.F04.I05 (book anchor xr-know-012)
   def delete_sys_menu
     SysMenu.where(id: params[:menu_id]).delete_all
     head :no_content

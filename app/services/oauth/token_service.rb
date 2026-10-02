@@ -15,6 +15,7 @@ module Oauth
       @redirect_uri = params[:redirectUri]
     end
 
+    # @impl M04.F03.I02 (book anchor xr-know-012)
     def call
       raise invalid('INVALID_CLIENT', 'unknown clientId') if client_row.nil?
 
@@ -53,6 +54,7 @@ module Oauth
       row
     end
 
+    # @impl M04.F03.I03 (book anchor xr-know-012)
     def rotate_refresh
       raise invalid('INVALID_REQUEST', 'refreshToken is required') if @refresh_token.blank?
 

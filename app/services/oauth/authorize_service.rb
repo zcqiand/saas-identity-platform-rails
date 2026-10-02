@@ -16,6 +16,7 @@ module Oauth
       @payload = payload
     end
 
+    # @impl M04.F03.I01 (book anchor xr-know-012)
     def call
       raise ArgumentError, 'responseType: must be "code"' unless @response_type == 'code'
       raise ArgumentError, "INVALID_CLIENT: unknown clientId #{@client_id}" if client.nil?

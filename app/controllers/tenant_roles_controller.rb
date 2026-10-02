@@ -8,10 +8,12 @@ class TenantRolesController < ApplicationController
   before_action :verify_path_tenant!
 
   # clientId 参数被忽略（镜像）
+  # @impl M00.F03.I01 (book anchor xr-know-012)
   def list_sys_roles
     render_paginated(SysRole.where(tenant_id: params[:tenant_id])) { |r| role_dto(r) }
   end
 
+  # @impl M00.F03.I02 (book anchor xr-know-012)
   def create_sys_role
     %i[clientId roleCode roleName].each do |key|
       raise ArgumentError, "#{key}: is required" if params[key].blank?
@@ -29,11 +31,13 @@ class TenantRolesController < ApplicationController
     render_camel(role_dto(role))
   end
 
+  # @impl M00.F03.I03 (book anchor xr-know-012)
   def get_sys_role
     render_camel(role_dto(locate_role))
   end
 
   # 镜像：只应用 roleName/description（status 字段可空不应用）
+  # @impl M00.F03.I04 (book anchor xr-know-012)
   def update_sys_role
     role = locate_role
     updates = params.permit(:roleName, :description).to_h
@@ -42,6 +46,7 @@ class TenantRolesController < ApplicationController
     render_camel(role_dto(role))
   end
 
+  # @impl M00.F03.I05 (book anchor xr-know-012)
   def delete_sys_role
     role = locate_role
     SysRoleMenu.where(role_id: role.id).delete_all

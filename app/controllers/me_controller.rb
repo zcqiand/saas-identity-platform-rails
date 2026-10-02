@@ -17,6 +17,7 @@ class MeController < ApplicationController
   end
 
   # clientId 参数被忽略（镜像）；active memberships 裸数组
+  # @impl M01.F03.I01 (book anchor xr-know-012)
   def list_my_tenants
     members = TenantMember.where(user_id: current_user_id, status: 1).order(:created_at)
     render_camel(members.map { |m| Family::MemberViews.membership(m) })
@@ -28,6 +29,7 @@ class MeController < ApplicationController
 
   # switch：tenant 存在 -> 404；member.status != 0（invited/suspended 可切）否则 404。
   # 新 JWT 换 tenant_id；refresh "saas-rt-..." 不落库（镜像 JwtIssuer.generateRefreshToken）
+  # @impl M01.F03.I02 (book anchor xr-know-012)
   def switch_tenant
     tenant = Tenant.find_by(id: params[:tenant_id])
     raise ActiveRecord::RecordNotFound, 'tenant not found' if tenant.nil?
