@@ -1,0 +1,638 @@
+{
+  "_schema": "code-suite-handoff v1",
+  "_note": "写书的事实底，非逐字引用源。book 引用该 tag 的终态文件(带 source=)；此清单供作者对账建造顺序。",
+  "project": "saas-identity-platform-rails",
+  "tag": "v0.1.5-20261004",
+  "stack": "rails",
+  "gate_proof": {
+    "tag": "v0.1.5-20261004",
+    "checked_at": "2026-10-03T18:11:33+00:00",
+    "verified": true,
+    "all_green": true,
+    "method": "gate.py --all",
+    "gate_command": "D:\\qiand-life\\1-projects\\xr-code-suite\\scripts\\gate.py -p saas-identity-platform-rails"
+  },
+  "function_tree": [
+    {
+      "fn_id": "M00.F01.I01",
+      "name": "租户列表",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F01.I02",
+      "name": "创建租户",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F01.I03",
+      "name": "租户详情",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F01.I04",
+      "name": "更新租户",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F01.I05",
+      "name": "删除租户",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F02.I01",
+      "name": "成员列表",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F02.I02",
+      "name": "创建成员",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F02.I03",
+      "name": "成员详情",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F02.I04",
+      "name": "更新成员",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F02.I05",
+      "name": "删除成员",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F02.I06",
+      "name": "邀请成员",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F02.I07",
+      "name": "接受邀请",
+      "type": "接口",
+      "status": "规划"
+    },
+    {
+      "fn_id": "M00.F02.I08",
+      "name": "状态切换",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F03.I01",
+      "name": "角色列表",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F03.I02",
+      "name": "创建角色",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F03.I03",
+      "name": "角色详情",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F03.I04",
+      "name": "更新角色",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F03.I05",
+      "name": "删除角色",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F04.I01",
+      "name": "权限矩阵绑定",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F04.I02",
+      "name": "角色已授权菜单查询",
+      "type": "接口",
+      "status": "开发中"
+    },
+    {
+      "fn_id": "M00.F04.I03",
+      "name": "整批设置角色菜单",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F04.I04",
+      "name": "清空角色菜单",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F05.I01",
+      "name": "列出租户应用",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F05.I02",
+      "name": "订阅应用",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F05.I03",
+      "name": "更新应用订阅",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M00.F05.I04",
+      "name": "移除应用订阅",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M01.F01.I01",
+      "name": "当前用户 whoami",
+      "type": "查询",
+      "status": "开发中"
+    },
+    {
+      "fn_id": "M01.F02.I01",
+      "name": "分配角色",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M01.F03.I01",
+      "name": "列出我的租户成员关系",
+      "type": "查询",
+      "status": "开发中"
+    },
+    {
+      "fn_id": "M01.F03.I02",
+      "name": "切换当前租户",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M01.F04.I01",
+      "name": "密码登录 API",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M01.F04.I02",
+      "name": "失败锁定",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M01.F04.I03",
+      "name": "密码登录 UI",
+      "type": "页面",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M01.F04.I04",
+      "name": "~~OIDC Code 换取~~",
+      "type": "接口",
+      "status": "已废弃"
+    },
+    {
+      "fn_id": "M01.F04.I05",
+      "name": "~~refresh token~~",
+      "type": "接口",
+      "status": "已废弃"
+    },
+    {
+      "fn_id": "M01.F04.I06",
+      "name": "登出（本地清理）",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M01.F04.I07",
+      "name": "登出（全局 SSO）",
+      "type": "接口",
+      "status": "已废弃"
+    },
+    {
+      "fn_id": "M04.F01.I01",
+      "name": "OAuth 应用列表",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M04.F01.I02",
+      "name": "创建 OAuth 应用",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M04.F01.I03",
+      "name": "OAuth 应用详情",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M04.F01.I04",
+      "name": "更新 OAuth 应用",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M04.F01.I05",
+      "name": "删除 OAuth 应用",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M04.F01.I06",
+      "name": "公共 client 元数据",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M04.F02.I01",
+      "name": "启用/停用应用",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M04.F03.I01",
+      "name": "授权码签发",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M04.F03.I02",
+      "name": "令牌交换",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M04.F03.I03",
+      "name": "令牌刷新",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M04.F04.I01",
+      "name": "菜单列表",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M04.F04.I02",
+      "name": "创建菜单",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M04.F04.I03",
+      "name": "菜单详情",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M04.F04.I04",
+      "name": "更新菜单",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M04.F04.I05",
+      "name": "删除菜单",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M04.F04.I06",
+      "name": "同级排序",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M04.F04.I07",
+      "name": "切换父级",
+      "type": "接口",
+      "status": "已上线"
+    },
+    {
+      "fn_id": "M04.F04.I08",
+      "name": "当前用户有效菜单",
+      "type": "查询",
+      "status": "已上线"
+    }
+  ],
+  "trace": [],
+  "source_index": [
+    {
+      "fn_id": "M00.F01.I01",
+      "source_paths": [
+        "app\\controllers\\admin_tenants_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F01.I02",
+      "source_paths": [
+        "app\\controllers\\admin_tenants_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F01.I03",
+      "source_paths": [
+        "app\\controllers\\admin_tenants_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F01.I04",
+      "source_paths": [
+        "app\\controllers\\admin_tenants_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F01.I05",
+      "source_paths": [
+        "app\\controllers\\admin_tenants_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F02.I01",
+      "source_paths": [
+        "app\\controllers\\tenant_members_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F02.I02",
+      "source_paths": [
+        "app\\controllers\\tenant_members_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F02.I03",
+      "source_paths": [
+        "app\\controllers\\tenant_members_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F02.I04",
+      "source_paths": [
+        "app\\controllers\\tenant_members_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F02.I05",
+      "source_paths": [
+        "app\\controllers\\tenant_members_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F02.I06",
+      "source_paths": [
+        "app\\controllers\\tenant_members_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F02.I08",
+      "source_paths": [
+        "app\\controllers\\tenant_members_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F03.I01",
+      "source_paths": [
+        "app\\controllers\\tenant_roles_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F03.I02",
+      "source_paths": [
+        "app\\controllers\\tenant_roles_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F03.I03",
+      "source_paths": [
+        "app\\controllers\\tenant_roles_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F03.I04",
+      "source_paths": [
+        "app\\controllers\\tenant_roles_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F03.I05",
+      "source_paths": [
+        "app\\controllers\\tenant_roles_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F04.I01",
+      "source_paths": [
+        "app\\controllers\\tenant_role_menus_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F04.I03",
+      "source_paths": [
+        "app\\controllers\\tenant_role_menus_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F04.I04",
+      "source_paths": [
+        "app\\controllers\\tenant_role_menus_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F05.I01",
+      "source_paths": [
+        "app\\controllers\\tenant_applications_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F05.I02",
+      "source_paths": [
+        "app\\controllers\\tenant_applications_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F05.I03",
+      "source_paths": [
+        "app\\controllers\\tenant_applications_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M00.F05.I04",
+      "source_paths": [
+        "app\\controllers\\tenant_applications_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M01.F02.I01",
+      "source_paths": [
+        "app\\controllers\\tenant_members_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M01.F03.I01",
+      "source_paths": [
+        "app\\controllers\\me_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M01.F03.I02",
+      "source_paths": [
+        "app\\controllers\\me_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M01.F04.I01",
+      "source_paths": [
+        "app\\services\\auth\\login_service.rb"
+      ]
+    },
+    {
+      "fn_id": "M01.F04.I02",
+      "source_paths": [
+        "app\\services\\auth\\login_service.rb"
+      ]
+    },
+    {
+      "fn_id": "M01.F04.I06",
+      "source_paths": [
+        "app\\controllers\\sessions_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M04.F01.I01",
+      "source_paths": [
+        "app\\controllers\\admin_clients_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M04.F01.I02",
+      "source_paths": [
+        "app\\controllers\\admin_clients_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M04.F01.I03",
+      "source_paths": [
+        "app\\controllers\\admin_clients_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M04.F01.I04",
+      "source_paths": [
+        "app\\controllers\\admin_clients_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M04.F01.I05",
+      "source_paths": [
+        "app\\controllers\\admin_clients_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M04.F01.I06",
+      "source_paths": [
+        "app\\controllers\\clients_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M04.F02.I01",
+      "source_paths": [
+        "app\\controllers\\admin_clients_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M04.F03.I01",
+      "source_paths": [
+        "app\\services\\oauth\\authorize_service.rb"
+      ]
+    },
+    {
+      "fn_id": "M04.F03.I02",
+      "source_paths": [
+        "app\\services\\oauth\\token_service.rb"
+      ]
+    },
+    {
+      "fn_id": "M04.F03.I03",
+      "source_paths": [
+        "app\\services\\oauth\\token_service.rb"
+      ]
+    },
+    {
+      "fn_id": "M04.F04.I01",
+      "source_paths": [
+        "app\\controllers\\client_menus_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M04.F04.I02",
+      "source_paths": [
+        "app\\controllers\\client_menus_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M04.F04.I03",
+      "source_paths": [
+        "app\\controllers\\client_menus_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M04.F04.I04",
+      "source_paths": [
+        "app\\controllers\\client_menus_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M04.F04.I05",
+      "source_paths": [
+        "app\\controllers\\client_menus_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M04.F04.I06",
+      "source_paths": [
+        "app\\controllers\\client_menus_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M04.F04.I07",
+      "source_paths": [
+        "app\\controllers\\client_menus_controller.rb"
+      ]
+    },
+    {
+      "fn_id": "M04.F04.I08",
+      "source_paths": [
+        "app\\services\\me\\menu_tree.rb"
+      ]
+    }
+  ]
+}
