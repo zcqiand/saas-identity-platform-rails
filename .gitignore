@@ -32,3 +32,7 @@ coverage/
 .state/gate.partial.json
 .state/alignment.json
 .state/session.json
+
+# 2026-10-04 env 泄漏纪律：本机 .env 不入库（.env.local 已屏蔽，契约三件套不受影响）
+.env
+.env.*.local
