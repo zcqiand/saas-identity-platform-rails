@@ -56,7 +56,7 @@ if [ ! -f "$BASE/rails.env" ]; then
       printf 'JWT_AUDIENCE=saas-identity-platform-clients\n'
       printf 'JWT_TTL_SECONDS=3600\n'
       # 默认 CORS 白名单：vue/react SPA + saas-nextjs + 本仓域名。运维可手工追加 origin。
-      printf 'SAAS_CORS_ALLOWED_ORIGINS=https://%s,https://saas-vue.xiangru.uk,https://saas-react.xiangru.uk,https://saas-nextjs.xiangru.uk\n' "$NGINX_DOMAIN"
+      printf 'SAAS_CORS_ALLOWED_ORIGINS=https://%s,https://saas-vue.xiangru.uk,https://saas-react.xiangru.uk,https://saas-nextjs.xiangru.uk,https://saas-flutter.xiangru.uk\n' "$NGINX_DOMAIN"
       # rails prod 启动必需，首启随机生成
       printf 'SECRET_KEY_BASE=%s\n' "$(head -c 48 /dev/urandom | base64 | tr -d '\n')"
       # —— 兼容键（键集相等契约；rails 运行时只读 PG_* 五件套 + JWT + CORS + SECRET_KEY_BASE，
@@ -154,6 +154,7 @@ if [ -f "$BASE/rails.env" ]; then
   append_if_missing JWT_TTL_SECONDS '3600'
   append_if_missing DATABASE_NAME 'saas_prod'
   append_if_missing JWT_AUTHORITY 'https://auth.example.com'
+  append_if_missing SAAS_CORS_ALLOWED_ORIGINS "https://${NGINX_DOMAIN},https://saas-vue.xiangru.uk,https://saas-react.xiangru.uk,https://saas-nextjs.xiangru.uk,https://saas-flutter.xiangru.uk"
 
   # SECRET_KEY_BASE 缺失/空值补随机（rails prod 启动必需；已有值不覆盖——
   # 重启后 session/verifier 密钥保持稳定,存量 cookie 不失效）
@@ -169,12 +170,13 @@ if [ -f "$BASE/rails.env" ]; then
     printf 'JWT_SIGNING_KEY=%s\n' "$(head -c 48 /dev/urandom | base64 | tr -d '\n')" >> "$BASE/rails.env"
   fi
 
-  # origin 级无损追加（家族同款）：三前端 + 本域都可跨源调本后端，
+  # origin 级无损追加（家族同款）：四前端（vue/react/nextjs/flutter）+ 本域都可跨源调本后端，
   # 存量 env-file 缺哪个 origin 就补哪个（不整值覆盖，运维手工 origin 保留）。
   for cors_origin in "https://${NGINX_DOMAIN}" \
                      "https://saas-nextjs.xiangru.uk" \
                      "https://saas-react.xiangru.uk" \
-                     "https://saas-vue.xiangru.uk"; do
+                     "https://saas-vue.xiangru.uk" \
+                     "https://saas-flutter.xiangru.uk"; do
     if grep -q '^SAAS_CORS_ALLOWED_ORIGINS=' "$BASE/rails.env" && ! grep '^SAAS_CORS_ALLOWED_ORIGINS=' "$BASE/rails.env" | grep -qF "$cors_origin"; then
       sed -i "s#^\(SAAS_CORS_ALLOWED_ORIGINS=.*\)#\1,${cors_origin}#" "$BASE/rails.env"
       echo "→ reconcile SAAS_CORS_ALLOWED_ORIGINS: 追加缺失 origin ${cors_origin}（origin 级，不整值覆盖）"
