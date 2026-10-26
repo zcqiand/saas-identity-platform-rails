@@ -7,11 +7,12 @@ SaaS 身份认证平台 Rails 后端（`saas-identity-platform-rails`）——�
 ## 快速开始
 
 ```bash
-# 按 rails 栈替换为实际命令
-npm install        # 安装依赖
-npm test           # 全量测试（无 Key / 无 Docker / 无网可跑）
-npm run dev        # 本地开发
-npm run build      # 生产构建
+# 前置：ruby + bundler
+bundle install                       # 安装依赖（Gemfile.lock 钉版）
+bundle exec rubocop --only Layout    # L1 格式
+bundle exec rubocop                  # L2 静态（另有 brakeman 安全门）
+bundle exec rake test                # L4 测试
+bundle exec rails server             # 本地起服务（.env SERVER_PORT=5106）
 ```
 
 ## 功能特性
@@ -22,7 +23,7 @@ npm run build      # 生产构建
 
 | 技术 | 版本 |
 | :--- | :--- |
-| __STACK_DESC_LINE__ | |
+| Ruby / Rails | 版本全集见 version-lock.json（pg / puma / jwt-gem…） |
 
 > 依赖版本与 `version-lock.json` 的 `version_lock` 一致，不引入 lock 外的库。
 
