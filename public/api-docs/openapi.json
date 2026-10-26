@@ -2699,6 +2699,7 @@
           },
           "parentId": {
             "type": "string",
+            "nullable": true,
             "format": "uuid"
           },
           "title": {
