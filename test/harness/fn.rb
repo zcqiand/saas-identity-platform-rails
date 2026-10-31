@@ -9,13 +9,20 @@ module Harness
   # - ID 必须已登记在 docs/functions/function-tree.md，否则 L5 报悬空引用
   # - skip 的测试 body 不执行 -> 天然无登记；TraceReporter 对 skipped? 再强制 fns=[]
   #   （双保险：适配器在源头保证「被 skip 仍声称覆盖」结构上不可能）
-  FN_REGISTRY = {}.freeze
+  # 登记表按测试运行时逐条写入，冻结会让 fn() 结构上不可用（REQ-2026-022 首次启用即
+  # FrozenError 实证）；rubocop 宽免仅限本行。
+  # rubocop:disable-next Style/MutableConstant
+  FN_REGISTRY = {}
 
   # 在测试方法体内调用：fn "M01.F01.I01", "M01.F01.I02"
-  # 键用 base_label（Ruby 3.4 起 label 带 "Class#" 前缀，base_label 才是纯方法名）
+  # 键必须与 reporter 侧 result.name 对齐：测试实例自身的 name（方法名形态）。
+  # base_label 不可用——define_method 块帧在 Ruby 3.4 + minitest 5.25 下返回 "run"
+  # （REQ-2026-022 探针实证），直接登记会全部互覆且 reporter 查空。
   def fn(*ids)
     loc = caller_locations(1, 1).first
-    FN_REGISTRY[loc.base_label] = { fns: ids.map(&:to_s), file: loc.path }
+    key = name if respond_to?(:name) && name
+    key ||= loc.base_label
+    FN_REGISTRY[key] = { fns: ids.map(&:to_s), file: loc.path }
   end
 end
 
