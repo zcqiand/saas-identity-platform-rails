@@ -36,25 +36,42 @@ module Oauth
       issue(row.client_id, row.user_id, row.tenant_id, row.scope)
     end
 
-    # code 一次性消费：过期/redirect 不匹配也删行（重放 400）
+    # code 一次性消费：过期/redirect 不匹配也删行（重放 400）。
+    # claim 原子性（5.123①）：删除按 code 谓词整行删并校验影响行数——并发双请求
+    # 只有一个赢家，「读到行但删除未生效」（deleted=0）的输家必须拒签，
+    # 禁止 read-then-delete 裸删。
     def consume_code_row
       row = OauthCode.find_by(code: @code)
       raise invalid('INVALID_GRANT', 'code 不存在或已被使用') if row.nil? || row.client_id != @client_id
 
-      if row.expires_at <= Time.now
-        row.delete
-        raise invalid('INVALID_GRANT', 'expired code')
-      end
-      unless ActiveSupport::SecurityUtils.secure_compare(row.redirect_uri.to_s, @redirect_uri.to_s)
-        row.delete
-        raise invalid('INVALID_GRANT', 'redirectUri mismatch')
-      end
+      error = rejection_of(row)
+      raise error if error
 
-      row.delete
+      raise invalid('INVALID_GRANT', 'code 不存在或已被使用') if discard_code(row.code).zero?
+
       row
     end
 
+    # 过期 / redirect 不匹配的整行废弃（重放 400）；nil = 通过，可进入原子 claim
+    def rejection_of(row)
+      if row.expires_at <= Time.now
+        discard_code(row.code)
+        return invalid('INVALID_GRANT', 'expired code')
+      end
+      return invalid('INVALID_GRANT', 'redirectUri mismatch') unless
+        ActiveSupport::SecurityUtils.secure_compare(row.redirect_uri.to_s, @redirect_uri.to_s)
+
+      nil
+    end
+
+    # 原子 claim/废弃：按 code 谓词整行删，返回影响行数（0 = 已被并发赢家消费）
+    def discard_code(code)
+      OauthCode.where(code: code).delete_all
+    end
+
     # @impl M04.F03.I03 (book anchor xr-know-012)
+    # 轮换段原子性（5.123②）：撤销旧行与签发新对同事务——签发段失败回滚，
+    # 旧行 revoked 还原，refresh 可重试；禁止「旧废新未落」半态。
     def rotate_refresh
       raise invalid('INVALID_REQUEST', 'refreshToken is required') if @refresh_token.blank?
 
@@ -63,8 +80,10 @@ module Oauth
       raise invalid('INVALID_GRANT', 'revoked refresh_token') if row.revoked
 
       scope = OauthAccessToken.find_by(id: row.access_token_id)&.scope
-      row.update!(revoked: true)
-      issue(row.client_id, row.user_id, row.tenant_id, scope)
+      ActiveRecord::Base.transaction do
+        row.update!(revoked: true)
+        issue(row.client_id, row.user_id, row.tenant_id, scope)
+      end
     end
 
     # 新 refresh 落库（"rt_<uuid>" 30 天）+ HS256 access JWT（镜像 persistTokenPair）
