@@ -8,7 +8,7 @@ class ClientMenusController < ApplicationController
   # 扁平列表（非树），parentId 零值 UUID 不转 null，无 updatedAt（镜像 DTO）
   # @impl M04.F04.I01 (book anchor xr-know-012)
   def list_sys_menus
-    menus = SysMenu.where(client_id: params[:client_id]).order(:sort_order)
+    menus = SysMenu.where(client_id: params[:client_id]).order(:sort_order, :id)
     render_camel(menus.map { |m| menu_dto(m) })
   end
 
@@ -68,7 +68,7 @@ class ClientMenusController < ApplicationController
     idx = ordered.index(menu.id)
     menu.update!(sort_order: idx) if idx
     render_camel(
-      SysMenu.where(client_id: params[:client_id]).order(:sort_order).map { |m| menu_dto(m) }
+      SysMenu.where(client_id: params[:client_id]).order(:sort_order, :id).map { |m| menu_dto(m) }
     )
   end
 
